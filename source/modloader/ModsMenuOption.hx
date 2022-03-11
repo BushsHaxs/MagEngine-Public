@@ -1,6 +1,6 @@
 package modloader;
 
-#if sys
+#if MODS
 import flixel.FlxSubState;
 import polymod.Polymod.ModMetadata;
 import modloader.ModList;
@@ -11,9 +11,10 @@ import flixel.FlxG;
 import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
 import flixel.ui.FlxButton;
+import flixel.ui.FlxSpriteButton;
 
- class ModsMenuOption extends FlxTypedGroup<FlxSprite>
- {
+class ModsMenuOption extends FlxTypedGroup<FlxSprite>
+{
 	public var Alphabet_Text:Alphabet;
 	public var Mod_Icon:ModIcon;
 
@@ -23,7 +24,11 @@ import flixel.ui.FlxButton;
 
 	public var Option_Name:String = "-";
 	public var Option_Value:String = "Template Mod";
-	
+
+	public static var enableButton:FlxButton;
+
+	public static var disableButton:FlxButton;
+
 	public function new(_Option_Name:String = "-", _Option_Value:String = "Template Mod", _Option_Row:Int = 0)
 	{
 		super();
@@ -32,7 +37,8 @@ import flixel.ui.FlxButton;
 		this.Option_Value = _Option_Value;
 		this.Option_Row = _Option_Row;
 
-		Alphabet_Text = new Alphabet(0, 0 + (Option_Row * 100), Option_Name, true);
+		var scale:Float = Math.min(9.2 / (Option_Name.length), 1);
+		Alphabet_Text = new Alphabet(0, 0 + (Option_Row * 100), Option_Name, true, false, 0.05, scale);
 		Alphabet_Text.isMenuItem = true;
 		Alphabet_Text.targetY = Option_Row;
 		add(Alphabet_Text);
@@ -48,33 +54,9 @@ import flixel.ui.FlxButton;
 
 	override function update(elapsed:Float)
 	{
-
 		super.update(elapsed);
 
-		var enableButton:FlxButton = new FlxButton(920, 620, "Enable Mod", function()
-		{
-			Mod_Enabled = true;
-		});
-		enableButton.setGraphicSize(150, 70);
-		enableButton.updateHitbox();
-		enableButton.label.y += 22;
-		enableButton.label.fieldWidth = 135;
-		enableButton.label.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
-		add(enableButton);
-		
-		var disableButton:FlxButton = new FlxButton(1100, 620, "Disable Mod", function()
-		{
-			Mod_Enabled = false;
-		});
-		
-		disableButton.setGraphicSize(150, 70);
-		disableButton.updateHitbox();
-		disableButton.label.y += 22;
-		disableButton.label.fieldWidth = 135;
-		disableButton.label.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
-		add(disableButton);
-	
-		if(Mod_Enabled)
+		if (Mod_Enabled)
 		{
 			Alphabet_Text.color = FlxColor.GREEN;
 		}
