@@ -32,17 +32,8 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	public var optionShit:Array<String> = [
-		'story mode',
-		'freeplay',
-		#if MODS 'mods',
-		#end
-		'credits',
-		'editors',
-		'social',
-		'donate',
-		'options'
-	];
+	// YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+	public var optionShit:Array<String> = CoolUtil.coolTextFile(Paths.txt('data/menuButtonList'));
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
@@ -57,6 +48,21 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
+
+		optionShit = CoolUtil.coolTextFile(Paths.txt('data/menuButtonList'));
+		if (FileSystem.exists(Paths.modTxt('data/menuButtonList')) && FileSystem.exists(Paths.txt('data/menuButtonList')))
+		{
+			optionShit = File.getContent(Paths.modTxt('data/menuButtonList')).trim().split('\n');
+
+			for (i in 0...optionShit.length)
+			{
+				optionShit[i] = optionShit[i].trim();
+			}
+		}
+		else
+		{
+			optionShit = CoolUtil.coolTextFile(Paths.txt('data/menuButtonList'));
+		}
 
 		if (!FlxG.sound.music.playing)
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -118,10 +124,15 @@ class MainMenuState extends MusicBeatState
 		{
 			var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
 			var menuItem:FlxSprite = new FlxSprite(0, (i * 140) + offset);
-			if (i == 4)
-				menuItem.frames = editors;
-			else
-				menuItem.frames = tex;
+			switch (optionShit[i])
+			{
+				case 'editors':
+					menuItem.frames = editors;
+				default:
+					menuItem.frames = tex;
+			}
+			menuItem.scale.x = 0.8;
+			menuItem.scale.y = 0.8;
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
@@ -230,7 +241,7 @@ class MainMenuState extends MusicBeatState
 										MusicBeatState.switchState(new OptionsMenu());
 
 									default:
-										MusicBeatState.switchState(new CustomState());
+										MusicBeatState.switchState(new CustomState(optionShit[curSelected], true));
 								}
 							});
 						}
@@ -260,9 +271,14 @@ class MainMenuState extends MusicBeatState
 		{
 			spr.animation.play('idle');
 
+			FlxTween.tween(spr.scale, {x: 0.8}, 0.1, {ease: FlxEase.linear});
+			FlxTween.tween(spr.scale, {y: 0.8}, 0.1, {ease: FlxEase.linear});
+
 			if (spr.ID == curSelected)
 			{
 				spr.animation.play('selected');
+				FlxTween.tween(spr.scale, {x: 1}, 0.1, {ease: FlxEase.linear});
+				FlxTween.tween(spr.scale, {y: 1}, 0.1, {ease: FlxEase.linear});
 				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
 			}
 

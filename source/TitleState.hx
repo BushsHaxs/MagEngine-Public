@@ -102,6 +102,11 @@ class TitleState extends MusicBeatState
 			trace('NEWGROUNDS LOL');
 			#end
 
+			FlxG.save.bind('funkin', 'ninjamuffin99');
+			
+			PlayerSettings.init();
+			MagDefaults.init();
+
 			Highscore.load();
 		}
 
@@ -416,6 +421,9 @@ class TitleState extends MusicBeatState
 			remove(credGroup);
 			skippedIntro = true;
 
+			PlayerSettings.init();
+			MagDefaults.init();
+			
 			// why tf was this removed
 			#if MODS
 			ModList.load();
